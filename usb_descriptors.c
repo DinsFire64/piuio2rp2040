@@ -25,6 +25,7 @@
 
 #include "tusb.h"
 #include "descriptors.h"
+#include "piuio.h"
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
  * Same VID/PID with different interface e.g MSC (first), then CDC (later) will possibly cause system error on PC.
@@ -123,9 +124,31 @@ uint8_t const *tud_descriptor_configuration_cb(uint8_t index)
 char const *string_desc_arr[] =
     {
         (const char[]){0x09, 0x04}, // 0: is supported language is English (0x0409)
-        "Drewol",                   // 1: Manufacturer
-        "RP2040 RhythmCon",         // 2: Product
-        "123456",                   // 3: Serials, should use chip ID
+        "icedragon.io",             // 1: Manufacturer
+        "piuio2rp2040",             // 2: Product
+        "dance games",              // 3: Serials, should use chip ID
+
+        "p1 ul / p2 u",
+        "p1 ur / p2 d",
+        "p1 c / p2 l",
+        "p1 ll / p2 r",
+        "p1 lr",
+
+        "p2 ul / p1 u",
+        "p2 ur / p1 d",
+        "p2 c / p1 l",
+        "p2 ll / p1 r",
+        "p2 lr",
+
+        "neon",
+
+        "mar ul",
+        "mar ur",
+        "mar ll",
+        "mar lr",
+
+        "coin0",
+        "coin1 usb en",
 };
 
 static uint16_t _desc_str[32];

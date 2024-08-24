@@ -6,19 +6,21 @@ Ever wanted to get the status of a PIUIO on a microcontroller? Well now you can!
 
 It's an RP2040 firmware that will host a usb PIUIO and translate that into a usb HID gamepad and take lights from an HID endpoint.
 
-...kind of. It's a skeleton and a basis. Feel free to finish it and make a PR.
-
 I used an [Adafruit RP2040 feather host](https://www.adafruit.com/product/5723) dev board for development.
 
 # Why?
 
 Because I have lost control of my life.
 
-# Why is it incomplete?
+# Why would I use this?
 
-Performance over usb control transfer requests using the rp2040's PIO host was very subpar in my very limited testing. 
+To convert the PIUIO into a "generic" hid gamepad with hid lighting and to poll the sensors at a low level.
 
-For one round trip, not even accounting for the four sensor channels of the proper piuio I was only getting around 142Hz polling out of the device. If I turned off the push control transfer, I was able to get it to around double for 250Hz.
+HOWEVER!
+
+Performance over usb control transfer requests using the rp2040's PIO host using the tinyusb stack was very subpar in my very limited testing. 
+
+For one round trip, not even accounting for the four sensor channels of the proper piuio I was only getting around 142Hz polling out of the device. If I turned off the push control transfer, I was able to get it to around double for 250Hz, but that's not realistic as we need to set the sensor muxing position for a real cabinet.
 
 But overall this was just a fun experiment I thought some others would enjoy seeing. RP2040's USB PIO host cores are quite cool.
 

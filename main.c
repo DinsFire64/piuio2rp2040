@@ -14,7 +14,7 @@
 
 typedef struct
 {
-    uint16_t buttons;
+    uint32_t buttons;
     uint8_t joy0;
     uint8_t joy1;
     uint8_t joy2;
@@ -32,8 +32,9 @@ void setup_hardware()
     gpio_init(PIN_5V_EN);
     gpio_set_dir(PIN_5V_EN, GPIO_OUT);
 
-    gpio_put(PIN_5V_EN, 0);
-    sleep_ms(1000);
+    // toggling power like this causes a current spike, so ignore it.
+    // gpio_put(PIN_5V_EN, 0);
+    // sleep_ms(1000);
     gpio_put(PIN_5V_EN, 1);
 }
 
@@ -55,13 +56,16 @@ void core1_main()
     while (true)
     {
         tuh_task(); // tinyusb host task
+
+        // this is blocking.
+        piuio_task();
     }
 }
 
 int main(void)
 {
     // default 125MHz is not apropriate. Sysclock should be multiple of 12MHz.
-    set_sys_clock_khz(240000, true);
+    set_sys_clock_khz(120000, true);
 
     DebugSetup();
 
@@ -83,15 +87,9 @@ int main(void)
 
         if (tud_hid_ready())
         {
-            hid_report.buttons = buff_from_piuio[0] | buff_from_piuio[2] << 8;
-
-            // hid active high
-            hid_report.buttons = ~hid_report.buttons;
+            hid_report.buttons = current_button_state.raw;
             tud_hid_n_report(0x00, 0x01, &hid_report, sizeof(hid_report));
         }
-
-        // this is blocking.
-        piuio_task();
     }
 }
 
@@ -147,23 +145,17 @@ uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_t
 // received data on OUT endpoint ( Report ID = 0, Type = 0 )
 void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t const *buffer, uint16_t bufsize)
 {
-    /*
-    if (report_id == 2 && report_type == HID_REPORT_TYPE_OUTPUT && buffer[0] == 2 && bufsize >= sizeof(light_data)) // light data
+    if (report_id == 0x02 &&
+        report_type == HID_REPORT_TYPE_OUTPUT &&
+        bufsize == PIUIO_HID_NUM_LIGHTS)
     {
-        size_t i = 0;
-        for (i; i < sizeof(light_data); i++)
+        // only parse changes in lights.
+        if (memcmp(buffer, current_hid_light_state.raw_buff, PIUIO_HID_NUM_LIGHTS))
         {
-            light_data.raw[i] = buffer[i + 1];
+            // DebugOutputBuffer("CHG:", current_hid_light_state.raw_buff, PIUIO_HID_NUM_LIGHTS);
+
+            memcpy(current_hid_light_state.raw_buff, buffer, PIUIO_HID_NUM_LIGHTS);
+            piuio_parse_hid();
         }
     }
-    */
-
-    DebugOutputBuffer("LGT", buffer, bufsize);
-
-    // TODO: Edit the HID report to make more sense for this application
-    // map the lights from the CPU to the PIUIO bits.
-    buff_to_piuio[0] = buffer[0];
-
-    // echo back anything we received from host
-    tud_hid_report(0, buffer, bufsize);
 }
