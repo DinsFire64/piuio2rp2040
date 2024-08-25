@@ -52,8 +52,7 @@ typedef union
         bool pad4 : 1;
         bool pad5 : 1;
         bool btn_SERVICE : 1;
-        bool pad7 : 1;
-        bool pad8 : 1;
+        bool btn_CLR : 1;
     };
     uint8_t raw;
 } piuio_cabinet_byte_t;
@@ -105,7 +104,7 @@ typedef union
         bool pad3 : 1;
         bool pad4 : 1;
         bool pad5 : 1;
-        bool pad6 : 1;
+        bool lamp_led : 1;
         bool pad7 : 1;
     };
     uint8_t raw;

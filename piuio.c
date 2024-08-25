@@ -64,6 +64,9 @@ void push_buff_to_piuio()
     current_lamp_state.p1_lamps.mux_setting = current_sensor_mux;
     current_lamp_state.p2_lamps.mux_setting = current_sensor_mux;
 
+    // always turn on the led state to know we are working and powered.
+    current_lamp_state.lamp_neons.lamp_led = true;
+
     // DebugOutputBuffer("OUT:", current_lamp_state.raw_buff, sizeof(current_lamp_state.raw_buff));
 
     tusb_control_request_t const request_to_piuio =
@@ -185,6 +188,7 @@ void set_reactive_lights()
 #endif
 
     // these are for testing the bits.
+    /*
     current_lamp_state.lamp_neons.lamp_neon = current_button_state.p1.btn_UL_U;
 
     current_lamp_state.cabinet_lamps.lamp_maq_ll = current_button_state.p2.btn_UL_U;
@@ -194,6 +198,7 @@ void set_reactive_lights()
 
     current_lamp_state.cabinet_lamps.lamp_coin0_pulse = current_button_state.cab.btn_TEST;
     current_lamp_state.cabinet_lamps.lamp_coin1_usb_enable = current_button_state.cab.btn_TEST;
+    */
 }
 
 void piuio_task()
